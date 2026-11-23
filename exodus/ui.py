@@ -137,8 +137,8 @@ class App:
     def __init__(self, headless=False):
         pygame.init()
         flags = pygame.RESIZABLE if not headless else 0
-        self.window = pygame.display.set_mode((W * 2, H * 2), flags)
         pygame.display.set_caption("The Exodus")
+        self.window = pygame.display.set_mode((W * 2, H * 2), flags)
         self.canvas = pygame.Surface((W, H))
         self.font = pygame.font.Font(None, 22)
         self.big = pygame.font.Font(None, 44)

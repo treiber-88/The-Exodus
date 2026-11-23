@@ -43,7 +43,7 @@ jobs:
       - name: Package the downloads
         run: |
           mkdir release
-          (cd artifacts/TheExodus-Windows && zip -9 ../../release/TheExodus-Windows.zip TheExodus.exe)
+          cp artifacts/TheExodus-Windows/TheExodus.exe release/TheExodus-Windows.exe
           cp artifacts/TheExodus-macOS/TheExodus-macOS.zip release/
           chmod +x artifacts/TheExodus-Linux/TheExodus
           tar -C artifacts/TheExodus-Linux -czf release/TheExodus-Linux.tar.gz TheExodus
