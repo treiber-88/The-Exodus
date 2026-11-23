@@ -1,0 +1,30 @@
+name: Build
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt pyinstaller pillow
+      - run: python tools/sim_test.py
+      - run: python tools/ui_test.py test-shots
+      - run: python tools/save_test.py
+      - run: python tools/build_release.py
+      - name: Archive the macOS app
+        if: runner.os == 'macOS'
+        run: cd dist && rm -rf TheExodus && ditto -c -k --keepParent TheExodus.app TheExodus-macOS.zip && rm -rf TheExodus.app
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TheExodus-${{ runner.os }}
+          path: dist/*
