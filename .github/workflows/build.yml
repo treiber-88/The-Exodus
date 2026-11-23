@@ -28,3 +28,30 @@ jobs:
         with:
           name: TheExodus-${{ runner.os }}
           path: dist/*
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Package the downloads
+        run: |
+          mkdir release
+          (cd artifacts/TheExodus-Windows && zip -9 ../../release/TheExodus-Windows.zip TheExodus.exe)
+          cp artifacts/TheExodus-macOS/TheExodus-macOS.zip release/
+          chmod +x artifacts/TheExodus-Linux/TheExodus
+          tar -C artifacts/TheExodus-Linux -czf release/TheExodus-Linux.tar.gz TheExodus
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          gh release create "$GITHUB_REF_NAME" release/*
+          --repo "$GITHUB_REPOSITORY"
+          --title "The Exodus $GITHUB_REF_NAME"
+          --notes-file .github/release-notes.md
